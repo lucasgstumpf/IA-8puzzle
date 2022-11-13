@@ -1,4 +1,5 @@
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
 var tabuleiro = document.querySelector('.tabuleiro');
 
 var pecas = [];
@@ -107,7 +108,7 @@ function mover(tecla){
             }
 
             //Peca esquerda
-            if(pecas[posicao_atual-1]){
+            if(pecas[posicao_atual-1] && posicao_atual !=6 && posicao_atual !=3){
                 if(pecas[posicao_atual-1].innerText == 8){
                     fazer_movimento(posicao_atual,posicao_atual-1)
                     console.log("Pode mover")
@@ -116,7 +117,7 @@ function mover(tecla){
             }
 
             //Peca direita
-            if(pecas[posicao_atual+1]){
+            if(pecas[posicao_atual+1] && posicao_atual != 2 && posicao_atual !=5){
                 if(pecas[posicao_atual+1].innerText == 8){
                     fazer_movimento(posicao_atual,posicao_atual+1)
                     console.log("Pode mover")
@@ -128,3 +129,13 @@ function mover(tecla){
     }
 }
 
+
+function embaralhar(){
+    const max = 500;
+    for(i= 0; i < max; i++){
+        const j = Math.round(Math.random() * (8 - 0) + 0);
+        setTimeout(() => { mover(j) }, 3000);
+    }
+}
+
+embaralhar()
