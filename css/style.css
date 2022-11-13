@@ -14,3 +14,5 @@
     opacity: 1;
     transition: 0.3s;
 }
+
+.peca:hover{opacity: 0.7;}

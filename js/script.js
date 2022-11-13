@@ -57,6 +57,14 @@ function mover_tela(tecla){
 
 }
 
+function confere(){
+    var pos = []
+    for(let x of pecas){
+        pos.push(x.innerText)
+    }
+    console.log(pos)
+}
+
 function fazer_movimento(tecla,final){
     //Troca nos array
     let salva = pecas[tecla]
@@ -67,41 +75,52 @@ function fazer_movimento(tecla,final){
     pecas[posicao_vazio] = salva
     pecas[posicao] = vazio
 
+
+
     //troca no visual a tecla
     mover_tela(posicao_vazio)
     mover_tela(posicao)
+    confere()
 
 }
 
 function mover(tecla){
     for(let x of pecas){
         if(x.innerText == tecla){
-            console.log(x.innerText)
+            posicao_atual = pecas.indexOf(x)
             //Peca abaixo
-            if(pecas[tecla+3]){
-                if(pecas[tecla+3].innerText == 8){
-                    fazer_movimento(tecla,tecla+3)
+            if(pecas[posicao_atual+3]){
+                if(pecas[posicao_atual+3].innerText == 8){
+                    fazer_movimento(posicao_atual,posicao_atual+3)
+                    console.log("Pode mover")
+                    break;
                 }
             }
 
             //Peca acima
-            if(pecas[tecla-3]){
-                if(pecas[tecla-3].innerText == 8){
-                    fazer_movimento(tecla,tecla-3)
+            if(pecas[posicao_atual-3]){
+                if(pecas[posicao_atual-3].innerText == 8){
+                    fazer_movimento(posicao_atual,posicao_atual-3)
+                    console.log("Pode mover")
+                    break;
                 }
             }
 
             //Peca esquerda
-            if(pecas[tecla-1]){
-                if(pecas[tecla-1].innerText == 8){
-                    fazer_movimento(tecla,tecla-1)
+            if(pecas[posicao_atual-1]){
+                if(pecas[posicao_atual-1].innerText == 8){
+                    fazer_movimento(posicao_atual,posicao_atual-1)
+                    console.log("Pode mover")
+                    break;
                 }
             }
 
             //Peca direita
-            if(pecas[tecla+1]){
-                if(pecas[tecla+1].innerText == 8){
-                    fazer_movimento(tecla,tecla+1)
+            if(pecas[posicao_atual+1]){
+                if(pecas[posicao_atual+1].innerText == 8){
+                    fazer_movimento(posicao_atual,posicao_atual+1)
+                    console.log("Pode mover")
+                    break;
                 }
             }
         
