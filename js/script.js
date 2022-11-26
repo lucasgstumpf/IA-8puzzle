@@ -3,6 +3,7 @@
 const buttonH1 = document.querySelector('.btn-h1');
 const delay = ms => new Promise(res => setTimeout(res, ms));
 var tabuleiro = document.querySelector('.tabuleiro');
+var tentativa_antiga
 
 var pecas = [];
 var posicao = []
@@ -11,7 +12,7 @@ for (let i = 0; i < tabuleiro.children.length; i++){
     posicao.push(pecas[i].innerText)
 }
 
-function mover_tela(tecla){
+async function mover_tela(tecla){
     if(pecas.indexOf(pecas[tecla]) == 0){
         pecas[tecla].style["marginLeft"] = "00px"
         pecas[tecla].style["marginTop"] = "0px"     
@@ -58,9 +59,11 @@ function mover_tela(tecla){
         pecas[tecla].style["marginLeft"] = "400px"
     }
 
+    return
+
 }
 
-function confere(){
+async function confere(){
     var pos = []
     for(let x of pecas){
         pos.push(x.innerText)
@@ -68,7 +71,7 @@ function confere(){
     console.log(pos)
 }
 
-function fazer_movimento(tecla,final){
+async function fazer_movimento(tecla,final){
     //Troca nos array
     let salva = pecas[tecla]
     let posicao = pecas.indexOf(salva)
@@ -81,19 +84,21 @@ function fazer_movimento(tecla,final){
 
 
     //troca no visual a tecla
-    mover_tela(posicao_vazio)
-    mover_tela(posicao)
+    await mover_tela(posicao_vazio)
+    await mover_tela(posicao)
+
+    return
 
 }
 
-function mover(tecla){
+async function mover(tecla){
     for(let x of pecas){
         if(x.innerText == tecla){
             posicao_atual = pecas.indexOf(x)
             //Peca abaixo
             if(pecas[posicao_atual+3]){
                 if(pecas[posicao_atual+3].innerText == 8){
-                    fazer_movimento(posicao_atual,posicao_atual+3)
+                    await fazer_movimento(posicao_atual,posicao_atual+3)
                     break;
                 }
             }
@@ -101,7 +106,7 @@ function mover(tecla){
             //Peca acima
             if(pecas[posicao_atual-3]){
                 if(pecas[posicao_atual-3].innerText == 8){
-                    fazer_movimento(posicao_atual,posicao_atual-3)
+                    await fazer_movimento(posicao_atual,posicao_atual-3)
                     break;
                 }
             }
@@ -109,7 +114,7 @@ function mover(tecla){
             //Peca esquerda
             if(pecas[posicao_atual-1] && posicao_atual !=6 && posicao_atual !=3){
                 if(pecas[posicao_atual-1].innerText == 8){
-                    fazer_movimento(posicao_atual,posicao_atual-1)
+                    await fazer_movimento(posicao_atual,posicao_atual-1)
                     break;
                 }
             }
@@ -117,7 +122,7 @@ function mover(tecla){
             //Peca direita
             if(pecas[posicao_atual+1] && posicao_atual != 2 && posicao_atual !=5){
                 if(pecas[posicao_atual+1].innerText == 8){
-                    fazer_movimento(posicao_atual,posicao_atual+1)
+                    await fazer_movimento(posicao_atual,posicao_atual+1)
                     break;
                 }
             }
@@ -127,7 +132,7 @@ function mover(tecla){
     return true
 }
 
-function soma_heuristica(arr_entrada){
+async function soma_heuristica(arr_entrada){
     var posicao_correta = [0,1,2,3,4,5,6,7,8]
     var casas_erradas = []
 
@@ -153,7 +158,7 @@ function soma_heuristica(arr_entrada){
 
 }
 
-function transforma(arr_entrada){
+async function transforma(arr_entrada){
     let arr_saida = []
     for(let x of arr_entrada){
         arr_saida.push(x.innerText)
@@ -161,8 +166,9 @@ function transforma(arr_entrada){
     console.log(arr_saida)
 }
 
-function res_heuristica(){
+async function res_heuristica(){
         //Acha o 8 e ve quais que podem
+        
         var possiveis_movimentos = []
         for(let x of pecas){
                 posicao_atual = pecas.indexOf(x)
@@ -224,7 +230,7 @@ function res_heuristica(){
                 }
                 teste_peca.splice(vazio, 0, teste_peca.splice(from, 1)[0]);
     
-                soma = soma_heuristica(teste_peca)
+                soma = await soma_heuristica(teste_peca)
                 console.log("Tentativa: "+tentativa+" Soma: " + soma)
                 if(soma < salva_soma){
                     salva_soma = soma
@@ -232,102 +238,36 @@ function res_heuristica(){
                 }
     
             }
-            console.log(salva_tentativa)
 
-            if((mover(salva_tentativa) == true) && salva_soma != 0){
-                console.log("moveu os 2")
+            console.log(salva_tentativa)
+            
+            console.log(tentativa_antiga)
+
+            if((salva_soma != 0 && tentativa_antiga != salva_tentativa) || tentativa_antiga == undefined){
+                await mover(salva_tentativa)
+                console.log("ANTESSSSSSSSSSSS")
+                await setTimeout(async () => { await res_heuristica() }, 0500);
+                console.log("DEPOISSSSSSSSSS")
+                //await res_heuristica()
+                tentativa_antiga = salva_tentativa
             }
-    
+    return
 }
 
-buttonH1.addEventListener('click', () => {
+buttonH1.addEventListener('click', async () => {
     //Acha o 8 e ve quais que podem
-    var possiveis_movimentos = []
-    for(let x of pecas){
-            posicao_atual = pecas.indexOf(x)
-            //Peca abaixo
-            if(pecas[posicao_atual+3]){
-                if(pecas[posicao_atual+3].innerText == 8){
-                    possiveis_movimentos.push(x.innerText)
-                }
-            }
-
-            //Peca acima
-            if(pecas[posicao_atual-3]){
-                if(pecas[posicao_atual-3].innerText == 8){
-                    possiveis_movimentos.push(x.innerText)
-                }
-            }
-
-            //Peca esquerda
-            if(pecas[posicao_atual-1] && posicao_atual !=6 && posicao_atual !=3){
-                if(pecas[posicao_atual-1].innerText == 8){
-                    possiveis_movimentos.push(x.innerText)
-                }
-            }
-
-            //Peca direita
-            if(pecas[posicao_atual+1] && posicao_atual != 2 && posicao_atual !=5){
-                if(pecas[posicao_atual+1].innerText == 8){
-                    possiveis_movimentos.push(x.innerText)
-                }
-            }
-        
-    }
-
-        var vazio
-        for(let x of pecas){
-            if(x.innerText == 8){
-                vazio = pecas.indexOf(x)
-                break
-            }
-        }
-        
-        console.log("Vazio: " + vazio)
-
-        console.log("Possiveis Movimentos: "+ possiveis_movimentos)
-
-        var heu = []
-        var salva_soma = 10000
-        var salva_tentativa
-        for(let tentativa of possiveis_movimentos){
-            //Esse for vai gerar 3 array e vai calcular a soma de cada um, a menor soma ele faz o movimento e chama essa funcao de novo até a soma dar 0
-            var teste_peca = []
-            for(let y of pecas){
-                teste_peca.push(y)
-            }
-            for(let x of teste_peca){
-                if(x.innerText == tentativa){
-                    var from = teste_peca.indexOf(x)
-                }
-            }
-            teste_peca.splice(vazio, 0, teste_peca.splice(from, 1)[0]);
-
-            soma = soma_heuristica(teste_peca)
-            console.log("Tentativa: "+tentativa+" Soma: " + soma)
-            if(soma < salva_soma){
-                salva_soma = soma
-                salva_tentativa = tentativa
-            }
-
-        }
-        mover(salva_tentativa)
-
-        // if((mover(salva_tentativa) == true) && salva_soma != 0){
-        //     res_heuristica()
-        // }
+    
+    await res_heuristica()
+    
 
 });
 
 
-function embaralhar(){
+async function embaralhar(){
     const max = 500;
     for(i= 0; i < max; i++){
         const j = Math.round(Math.random() * (8 - 0) + 0);
-        teste = mover(j)
-        if(teste == true){
-            console.log(j)
-        }
+        await mover(j)
     }
 }
 embaralhar()
