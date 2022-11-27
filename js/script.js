@@ -2,8 +2,10 @@
 
 const buttonH1 = document.querySelector('.btn-h1');
 const buttonH2 = document.querySelector('.btn-h2');
-const buttonEmbaralha = document.querySelector('.btn-embaralha');
+const buttonEmbaralha = document.getElementById('btn-embaralha');
+console.log(buttonEmbaralha)
 const buttonAleatorio = document.querySelector('.btn-aleatorio');
+
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 var tabuleiro = document.querySelector('.tabuleiro');
@@ -329,7 +331,7 @@ async function res_heuristica_estrela(){
         else if((salva_soma != 0 && tentativa_antiga != salva_tentativa) || tentativa_antiga == undefined){
            await setTimeout(async () => { await mover(salva_tentativa) }, 0250);
             total_movimentos = total_movimentos + 1
-           await setTimeout(async () => { await res_heuristica() }, 200);
+           await setTimeout(async () => { await res_heuristica_estrela() }, 200);
             tentativa_antiga = salva_tentativa
         }
         else if(tentativa_antiga = salva_tentativa){
@@ -340,7 +342,7 @@ async function res_heuristica_estrela(){
 
              await setTimeout(async () => { await mover(salva_tentativa) }, 0250);
             total_movimentos = total_movimentos + 1
-             await setTimeout(async () => { await res_heuristica() }, 200);
+             await setTimeout(async () => { await res_heuristica_estrela() }, 200);
             tentativa_antiga = salva_tentativa
 
         }
@@ -497,26 +499,31 @@ async function res_heuristica_aleatoria(){
             }
         }
 
-        const numero = Math.floor(Math.random() * possiveis_movimentos.length);
-        console.log("Numero: " + numero)
-        var from = numero
+        var numero = Math.floor(Math.random() * possiveis_movimentos.length);
+        numero = possiveis_movimentos[numero]
+        for(let x of teste_peca){
+            if(x.innerText == numero){
+                var from = teste_peca.indexOf(x)
+            }
+        }
+        
         var backup_tentativa = teste_peca[from]
             teste_peca[from] = teste_peca[vazio]
             teste_peca[vazio] = backup_tentativa
 
-        //transforma(teste_peca)
-        // soma = await soma_heuristica(teste_peca)
+        transforma(teste_peca)
+        soma = await soma_heuristica(teste_peca)
 
-        //console.log(total_movimentos)
-        if(salva_soma == 0){
+        if(soma == 0){
             await setTimeout(async () => { await mover(numero) }, 0250);
             return
         }
 
         
-         await setTimeout(async () => { await mover(numero) }, 0250);
+        await setTimeout(async () => { await mover(numero) }, 0250);
         total_movimentos = total_movimentos + 1
-        await setTimeout(async () => { await res_heuristica() }, 200);
+        console.log("Movimentos: " + total_movimentos)
+        await setTimeout(async () => { await res_heuristica_aleatoria() }, 200);
 
         
 return
@@ -525,7 +532,8 @@ return
 
 buttonH1.addEventListener('click', async () => {
     //Acha o 8 e ve quais que podem
-    
+    total_movimentos = 0
+ 
     await res_heuristica()
     
 
@@ -533,33 +541,34 @@ buttonH1.addEventListener('click', async () => {
 
 buttonH2.addEventListener('click', async () => {
     //Acha o 8 e ve quais que podem
-    
+    total_movimentos = 0
+ 
     await res_heuristica_estrela()
     
 
 });
 
-buttonEmbaralha.addEventListener('click', async () => {
-    //Acha o 8 e ve quais que podem
-    
-    embaralhar()
-    
+async function btnEmbaralha() {
+    x = document.getElementById("valor").value;
+    await embaralhar(parseInt(x))
 
-});
+  }
+
 
 buttonAleatorio.addEventListener('click', async () => {
     //Acha o 8 e ve quais que podem
-    
+    total_movimentos = 0
+ 
     res_heuristica_aleatoria()
-    
+       
 
 });
 
 
 
-async function embaralhar(){
-    const max = 500;
+async function embaralhar(max){
     for(i= 0; i < max; i++){
+        console.log("i: "+i)
         const j = Math.round(Math.random() * (8 - 0) + 0);
             x = await mover(j) 
         
